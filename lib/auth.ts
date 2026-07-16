@@ -14,15 +14,19 @@ if (!baseURL) {
   throw new Error("BETTER_AUTH_URL is required");
 }
 
-function getTrustedOrigins(): string[] {
-  const origins = new Set<string>([baseURL]);
+const authBaseURL: string = baseURL;
 
-  if (process.env.VERCEL_URL) {
-    origins.add(`https://${process.env.VERCEL_URL}`);
+function getTrustedOrigins(): string[] {
+  const origins = new Set<string>([authBaseURL]);
+
+  const vercelUrl = process.env.VERCEL_URL;
+  if (vercelUrl) {
+    origins.add(`https://${vercelUrl}`);
   }
 
-  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
-    origins.add(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+  const productionUrl = process.env.VERCEL_PROJECT_PRODUCTION_URL;
+  if (productionUrl) {
+    origins.add(`https://${productionUrl}`);
   }
 
   return [...origins];
@@ -31,7 +35,7 @@ function getTrustedOrigins(): string[] {
 export const auth = betterAuth({
   appName: "Whop Tasks",
   secret,
-  baseURL,
+  baseURL: authBaseURL,
   database: drizzleAdapter(db, {
     provider: "pg",
     schema: {

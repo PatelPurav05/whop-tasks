@@ -8,7 +8,7 @@ export class BlobPrivateStorage implements PrivateStorage {
     extension: string;
   }): Promise<StoredObject> {
     const pathname = `proofs/${randomUUID()}${input.extension}`;
-    const blob = await put(pathname, input.data, {
+    const blob = await put(pathname, Buffer.from(input.data), {
       access: "private",
       addRandomSuffix: false,
     });
@@ -21,7 +21,7 @@ export class BlobPrivateStorage implements PrivateStorage {
 
   async read(key: string): Promise<Buffer> {
     const result = await get(key, { access: "private" });
-    if (result.statusCode !== 200 || !result.stream) {
+    if (!result || result.statusCode !== 200 || !result.stream) {
       throw new Error("Private proof file was not found in blob storage");
     }
 
