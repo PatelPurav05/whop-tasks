@@ -10,27 +10,14 @@ import {
   formatRelativeDeadline,
 } from "@/components/shared/format";
 import { ProductShell } from "@/components/shared/product-shell";
+import { SubmittedProofAnswer } from "@/components/shared/submitted-proof-answer";
 import { StatusBadge } from "@/components/shared/status-badge";
-import type { JsonValue } from "@/db/schema";
 import { getCurrentSession } from "@/lib/permissions";
 import { getClaimWorkspace } from "@/app/earn/data";
 
 export const metadata: Metadata = {
   title: "Task proof",
 };
-
-function displayAnswer(value: JsonValue): string {
-  if (typeof value === "boolean") {
-    return value ? "Confirmed" : "Not confirmed";
-  }
-  if (typeof value === "string") {
-    return value;
-  }
-  if (value === null) {
-    return "No answer";
-  }
-  return JSON.stringify(value);
-}
 
 export default async function ClaimWorkspacePage({
   params,
@@ -54,7 +41,7 @@ export default async function ClaimWorkspacePage({
     notFound();
   }
 
-  const { claim, campaign, businessName, requirements, submission, answers } =
+  const { claim, campaign, businessName, requirements, submission, answers, filesById } =
     workspace;
   const answerMap = Object.fromEntries(
     answers.map((answer) => [answer.proofRequirementId, answer.value]),
@@ -173,6 +160,7 @@ export default async function ClaimWorkspacePage({
                   claimId={claim.id}
                   requirements={requirements}
                   existingAnswers={answerMap}
+                  existingFiles={filesById}
                   isRevision={Boolean(submission)}
                 />
               </section>
@@ -184,35 +172,35 @@ export default async function ClaimWorkspacePage({
                 >
                   Submitted proof
                 </h2>
-                <dl className="mt-4 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                  {requirements.map((requirement) => {
+                <dl className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+                  {requirements.map((requirement, index) => {
                     const value = answerMap[requirement.id];
-                    const isFile =
-                      requirement.fieldType === "file" ||
-                      requirement.fieldType === "image";
+                    const file =
+                      typeof value === "string"
+                        ? (filesById[value] ?? null)
+                        : null;
+
                     return (
                       <div
                         key={requirement.id}
-                        className="grid gap-2 py-4 sm:grid-cols-[220px_1fr]"
+                        className="grid gap-3 py-6 sm:grid-cols-[220px_minmax(0,1fr)] sm:gap-8"
                       >
-                        <dt className="text-sm font-medium">
-                          {requirement.label}
+                        <dt>
+                          <p className="text-[15px] leading-[18px] font-medium">
+                            {index + 1}. {requirement.label}
+                          </p>
+                          {requirement.helpText ? (
+                            <p className="mt-2 text-[12px] leading-[15px] text-[var(--muted)]">
+                              {requirement.helpText}
+                            </p>
+                          ) : null}
                         </dt>
-                        <dd className="whitespace-pre-wrap text-sm text-[var(--muted)]">
-                          {isFile && typeof value === "string" ? (
-                            <a
-                              href={`/api/files/${value}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="font-medium text-[var(--foreground)] underline underline-offset-4"
-                            >
-                              Open proof file
-                            </a>
-                          ) : value === undefined ? (
-                            "No answer"
-                          ) : (
-                            displayAnswer(value)
-                          )}
+                        <dd className="min-w-0 text-[15px] leading-[21px] text-[var(--foreground)]">
+                          <SubmittedProofAnswer
+                            fieldType={requirement.fieldType}
+                            value={value}
+                            file={file}
+                          />
                         </dd>
                       </div>
                     );

@@ -15,11 +15,14 @@
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx scripts/seed.ts",
     "db:studio": "drizzle-kit studio",
-    "demo:setup": "docker compose up -d --wait && npm run db:migrate && npm run db:seed"
+    "demo:setup": "docker compose up -d --wait && npm run db:migrate && npm run db:seed",
+    "vercel-build": "drizzle-kit migrate && next build",
+    "deploy:seed": "DEMO_SEED_ALLOWED=true tsx scripts/seed.ts"
   },
   "dependencies": {
     "@frosted-ui/icons": "^0.0.1-canary.153",
     "@hookform/resolvers": "^5.4.0",
+    "@vercel/blob": "^2.6.1",
     "@whop/react": "^0.3.2",
     "better-auth": "^1.6.23",
     "drizzle-orm": "^0.45.2",

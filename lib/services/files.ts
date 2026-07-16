@@ -1,7 +1,7 @@
 import { basename } from "node:path";
 import { db } from "@/db";
 import { files } from "@/db/schema";
-import { privateStorage } from "@/lib/storage/local-private-storage";
+import { privateStorage } from "@/lib/storage";
 import { assertDomain } from "./errors";
 
 const MAX_FILE_BYTES = 8 * 1024 * 1024;

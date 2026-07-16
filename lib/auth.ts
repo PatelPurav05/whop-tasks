@@ -14,6 +14,20 @@ if (!baseURL) {
   throw new Error("BETTER_AUTH_URL is required");
 }
 
+function getTrustedOrigins(): string[] {
+  const origins = new Set<string>([baseURL]);
+
+  if (process.env.VERCEL_URL) {
+    origins.add(`https://${process.env.VERCEL_URL}`);
+  }
+
+  if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
+    origins.add(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`);
+  }
+
+  return [...origins];
+}
+
 export const auth = betterAuth({
   appName: "Whop Tasks",
   secret,
@@ -39,7 +53,7 @@ export const auth = betterAuth({
     window: 60,
     max: 100,
   },
-  trustedOrigins: [baseURL],
+  trustedOrigins: getTrustedOrigins(),
 });
 
 export type AuthSession = typeof auth.$Infer.Session;

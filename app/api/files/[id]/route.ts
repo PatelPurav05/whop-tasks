@@ -3,7 +3,7 @@ import { z } from "zod";
 import { db } from "@/db";
 import { campaigns, files, submissions } from "@/db/schema";
 import { getCurrentSession } from "@/lib/permissions";
-import { privateStorage } from "@/lib/storage/local-private-storage";
+import { privateStorage } from "@/lib/storage";
 
 const fileIdSchema = z.string().uuid();
 

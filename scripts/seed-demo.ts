@@ -464,8 +464,14 @@ const campaignSeeds = [
 ] satisfies readonly CampaignSeed[];
 
 function assertLocalDemoEnvironment(): void {
+  if (process.env.DEMO_SEED_ALLOWED === "true") {
+    return;
+  }
+
   if (process.env.NODE_ENV === "production") {
-    throw new Error("The demo seed is disabled when NODE_ENV=production");
+    throw new Error(
+      "The demo seed is disabled in production unless DEMO_SEED_ALLOWED=true",
+    );
   }
 
   const databaseUrl = process.env.DATABASE_URL;
@@ -477,7 +483,7 @@ function assertLocalDemoEnvironment(): void {
   const localHosts = new Set(["localhost", "127.0.0.1", "::1"]);
   if (!localHosts.has(parsed.hostname)) {
     throw new Error(
-      `Refusing to seed non-local database host "${parsed.hostname}"`,
+      `Refusing to seed non-local database host "${parsed.hostname}" unless DEMO_SEED_ALLOWED=true`,
     );
   }
 }
@@ -732,7 +738,7 @@ async function ensureCampaignState(
 
 export async function runDemoSeed(): Promise<void> {
   assertLocalDemoEnvironment();
-  console.log("Seeding local-only Whop Tasks demo data...");
+  console.log("Seeding Whop Tasks demo data...");
 
   const entries = await Promise.all(
     Object.entries(demoAccounts).map(async ([key, account]) => {

@@ -11,6 +11,8 @@ import {
   submitProofAction,
   type ProofActionState,
 } from "@/app/earn/tasks/[claimId]/actions";
+import type { SubmittedProofFile } from "@/components/shared/submitted-proof-answer";
+import { ProofFilePreview } from "@/components/shared/proof-file-preview";
 import type {
   JsonValue,
   ProofRequirement,
@@ -26,11 +28,13 @@ export function ProofForm({
   claimId,
   requirements,
   existingAnswers,
+  existingFiles = {},
   isRevision,
 }: {
   claimId: string;
   requirements: ProofRequirement[];
   existingAnswers: Record<string, JsonValue>;
+  existingFiles?: Record<string, SubmittedProofFile>;
   isRevision: boolean;
 }) {
   const [state, action, pending] = useActionState(
@@ -44,6 +48,10 @@ export function ProofForm({
       {requirements.map((requirement, index) => {
         const fieldName = `proof_${requirement.id}`;
         const existingValue = existingAnswers[requirement.id];
+        const existingFile =
+          typeof existingValue === "string"
+            ? (existingFiles[existingValue] ?? null)
+            : null;
         const fieldId = `requirement-${requirement.id}`;
         const helpId = `${fieldId}-help`;
 
@@ -137,17 +145,15 @@ export function ProofForm({
                         aria-describedby={requirement.helpText ? helpId : undefined}
                         className="block min-h-11 w-full rounded-xl border border-[var(--border)] bg-[var(--surface)] p-2 text-sm file:mr-3 file:rounded-lg file:border-0 file:bg-[var(--surface-subtle)] file:px-3 file:py-1.5 file:font-medium"
                       />
-                      <div className="mt-2 flex flex-wrap items-center gap-3 text-xs text-[var(--muted)]">
-                        <span>PNG, JPEG, or PDF. Maximum 8 MB.</span>
-                        {typeof existingValue === "string" ? (
-                          <a
-                            href={`/api/files/${existingValue}`}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="font-medium text-[var(--foreground)] underline underline-offset-4"
-                          >
-                            View current file
-                          </a>
+                      <div className="mt-3 space-y-3">
+                        <p className="text-xs text-[var(--muted)]">
+                          PNG, JPEG, or PDF. Maximum 8 MB.
+                          {existingFile
+                            ? " Upload a new file only if you want to replace the current one."
+                            : null}
+                        </p>
+                        {existingFile ? (
+                          <ProofFilePreview file={existingFile} />
                         ) : null}
                       </div>
                     </div>

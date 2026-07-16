@@ -5,6 +5,7 @@ import { db } from "@/db";
 import {
   campaigns,
   claims,
+  files,
   ledgerEntries,
   ledgerTransactions,
   proofRequirements,
@@ -98,11 +99,28 @@ export async function getClaimWorkspace(claimId: string, userId: string) {
           .where(eq(submissionAnswers.submissionId, submission.id))
       : [];
 
+    const fileRows = submission
+      ? await tx
+          .select({
+            id: files.id,
+            name: files.originalName,
+            mimeType: files.mimeType,
+            sizeBytes: files.sizeBytes,
+          })
+          .from(files)
+          .where(eq(files.submissionId, submission.id))
+      : [];
+
+    const filesById = Object.fromEntries(
+      fileRows.map((file) => [file.id, file]),
+    );
+
     return {
       ...row,
       requirements,
       submission: submission ?? null,
       answers,
+      filesById,
     };
   });
 }
