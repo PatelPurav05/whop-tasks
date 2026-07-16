@@ -10,7 +10,7 @@ import { getBusinessWalletHistory } from "@/app/business/data";
 import { requireBusinessUserId } from "@/app/business/require-user";
 
 const transactionLabels = {
-  demo_grant: "Demo funds added",
+  demo_grant: "Funds added",
   escrow_reservation: "Campaign escrow funded",
   payout: "Task payout received",
   refund: "Unused escrow refunded",
@@ -25,7 +25,7 @@ export default async function BusinessWalletPage() {
       <BusinessPageHeader
         eyebrow="Business wallet"
         title={formatMoney(wallet.balanceCents)}
-        description="Available demo funds. Publishing reserves the full campaign budget, approvals pay from escrow, and archiving returns anything unused."
+        description="Available funds. Publishing reserves the full campaign budget, approvals pay from escrow, and archiving returns anything unused."
         actions={
           <Button asChild color="gray" variant="ghost">
             <Link href="/business">Back to campaigns</Link>
@@ -46,7 +46,7 @@ export default async function BusinessWalletPage() {
         {wallet.items.length === 0 ? (
           <BusinessEmptyState
             title="No wallet activity yet"
-            description="Demo credits, campaign funding, payouts, and refunds will appear here."
+            description="Wallet credits, campaign funding, payouts, and refunds will appear here."
           />
         ) : (
           <div className="divide-y divide-black/10 border-y border-black/10 dark:divide-white/12 dark:border-white/12">

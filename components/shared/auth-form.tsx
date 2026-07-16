@@ -120,15 +120,17 @@ export function AuthForm({
         {isSignUp ? "Create account" : "Sign in"}
       </Button>
 
-      <p className="text-center text-sm text-[var(--muted)]">
-        {isSignUp ? "Already have an account?" : "New to Whop Tasks?"}{" "}
-        <Link
-          href={`${isSignUp ? "/sign-in" : "/sign-up"}?callbackUrl=${encodeURIComponent(callbackPath)}`}
-          className="font-medium text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
-        >
-          {isSignUp ? "Sign in" : "Create account"}
-        </Link>
-      </p>
+      <div className="pt-1">
+        <p className="text-center text-sm text-[var(--muted)]">
+          {isSignUp ? "Already have an account?" : "New to Whop Tasks?"}{" "}
+          <Link
+            href={`${isSignUp ? "/sign-in" : "/sign-up"}?callbackUrl=${encodeURIComponent(callbackPath)}`}
+            className="font-medium text-[var(--foreground)] underline decoration-[var(--border)] underline-offset-4 hover:decoration-[var(--accent)]"
+          >
+            {isSignUp ? "Sign in" : "Create account"}
+          </Link>
+        </p>
+      </div>
     </form>
   );
 }

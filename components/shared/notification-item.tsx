@@ -38,7 +38,7 @@ const notificationCopy: Record<
   },
   submission_approved: {
     title: "Submission approved",
-    detail: "The reward was added to your demo wallet.",
+    detail: "The reward was added to your wallet.",
   },
   submission_rejected: {
     title: "Submission rejected",
@@ -50,7 +50,7 @@ const notificationCopy: Record<
   },
   campaign_refunded: {
     title: "Campaign funds returned",
-    detail: "Unused demo escrow moved back to your wallet.",
+    detail: "Unused escrow moved back to your wallet.",
   },
 };
 

@@ -24,7 +24,7 @@ export function TaskCard({
   return (
     <Link
       href={`/tasks/${task.slug}`}
-      className={`group block rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 hover:-translate-y-0.5 hover:border-[color-mix(in_srgb,var(--accent)_45%,var(--border))] ${
+      className={`group block rounded-2xl bg-[var(--surface)] p-5 shadow-[0_1px_2px_rgba(0,0,0,0.06),0_8px_28px_rgba(0,0,0,0.035)] ring-1 ring-black/6 hover:-translate-y-0.5 hover:shadow-[0_2px_4px_rgba(0,0,0,0.08),0_14px_36px_rgba(0,0,0,0.07)] dark:ring-white/10 ${
         featured ? "sm:p-6" : ""
       }`}
       aria-label={`${task.title}, ${formatMoney(task.rewardCents)} reward`}
@@ -44,9 +44,11 @@ export function TaskCard({
               </Badge>
             ) : null}
           </div>
-          <h3 className="mt-3 text-[20px] leading-[23px] font-medium">
-            {task.title}
-          </h3>
+          <div className="pt-3">
+            <h3 className="text-[20px] leading-[23px] font-medium">
+              {task.title}
+            </h3>
+          </div>
           <p className="mt-2 line-clamp-2 max-w-[68ch] text-sm leading-5 text-[var(--muted)]">
             {task.description}
           </p>
@@ -66,14 +68,14 @@ export function TaskCard({
       <div className="mt-5 flex items-end gap-4 border-t border-[var(--border)] pt-4">
         <div>
           <p className="text-xs text-[var(--muted)]">Reward</p>
-          <p className="mt-1 text-[24px] leading-[27px] font-medium">
+          <p className="mt-1 text-[24px] leading-[27px] font-medium tabular-nums">
             {formatMoney(task.rewardCents)}
           </p>
         </div>
         <div className="ml-auto w-full max-w-44">
           <div className="mb-2 flex justify-between text-xs text-[var(--muted)]">
-            <span>{remainingSlots} available</span>
-            <span>{task.slotCapacity} total</span>
+            <span className="tabular-nums">{remainingSlots} available</span>
+            <span className="tabular-nums">{task.slotCapacity} total</span>
           </div>
           <Progress
             value={filledPercent}

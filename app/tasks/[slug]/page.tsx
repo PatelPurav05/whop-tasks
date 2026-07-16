@@ -16,6 +16,7 @@ import {
   getInitials,
 } from "@/components/shared/format";
 import { ProductShell } from "@/components/shared/product-shell";
+import { ProofRequirementsList } from "@/components/shared/proof-requirements-list";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { getCurrentSession } from "@/lib/permissions";
 import { getTaskDetail } from "@/app/marketplace-data";
@@ -122,7 +123,7 @@ export default async function TaskDetailPage({
                   aria-hidden="true"
                   className="text-[var(--success)]"
                 />
-                Fully funded in demo escrow
+                Fully funded in escrow
               </div>
             </div>
 
@@ -148,36 +149,13 @@ export default async function TaskDetailPage({
               <p className="mt-2 text-sm text-[var(--muted)]">
                 You will complete these fields after claiming a slot.
               </p>
-              <ol className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
-                {requirements.map((requirement, index) => (
-                  <li
-                    key={requirement.id}
-                    className="flex gap-4 py-4 first:pt-0 last:pb-0"
-                  >
-                    <span className="grid size-7 shrink-0 place-items-center rounded-full bg-[var(--surface-subtle)] text-xs font-medium">
-                      {index + 1}
-                    </span>
-                    <div>
-                      <p className="font-medium">
-                        {requirement.label}
-                        {requirement.required ? (
-                          <span className="ml-1 text-[var(--accent)]">*</span>
-                        ) : null}
-                      </p>
-                      <p className="mt-1 text-sm text-[var(--muted)]">
-                        {requirement.helpText ??
-                          requirement.fieldType.replaceAll("_", " ")}
-                      </p>
-                    </div>
-                  </li>
-                ))}
-              </ol>
+              <ProofRequirementsList requirements={requirements} />
             </section>
           </article>
 
           <aside className="sticky top-24 hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5 lg:block">
             <p className="text-sm text-[var(--muted)]">Reward per approval</p>
-            <p className="mt-1 text-[32px] leading-[35px] font-medium">
+            <p className="mt-1 text-[32px] leading-[35px] font-medium tabular-nums">
               {formatMoney(campaign.rewardCents)}
             </p>
 
@@ -253,7 +231,9 @@ export default async function TaskDetailPage({
         <div className="mx-auto flex max-w-lg items-center gap-4">
           <div className="shrink-0">
             <p className="text-xs text-[var(--muted)]">Reward</p>
-            <p className="font-medium">{formatMoney(campaign.rewardCents)}</p>
+            <p className="font-medium tabular-nums">
+              {formatMoney(campaign.rewardCents)}
+            </p>
           </div>
           <div className="min-w-0 flex-1">
             {hasOpenClaim && currentClaim ? (

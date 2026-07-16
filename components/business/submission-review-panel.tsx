@@ -1,40 +1,28 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button, Callout, TextArea } from "@whop/react/components";
-import { Document20 } from "@frosted-ui/icons";
 import {
   reviewSubmissionAction,
   type ReviewActionInput,
 } from "@/app/business/actions";
 import {
   formatDateTime,
-  formatFileSize,
   formatMoney,
 } from "@/components/business/format";
+import { ProofFilePreview } from "@/components/shared/proof-file-preview";
 import { StatusBadge } from "@/components/business/status-badge";
 import type {
   ActionResult,
   SubmissionReviewDetail,
 } from "@/components/business/types";
 
-type FeedbackMode = "changes" | "reject" | null;
+type FeedbackMode = "approve" | "changes" | "reject" | null;
 
 function renderAnswerValue(answer: SubmissionReviewDetail["answers"][number]) {
   if (answer.file) {
-    return (
-      <Button asChild variant="surface" color="gray">
-        <Link href={`/api/files/${answer.file.id}`} target="_blank">
-          <Document20 aria-hidden="true" />
-          {answer.file.name}
-          <span className="text-current/55">
-            {formatFileSize(answer.file.sizeBytes)}
-          </span>
-        </Link>
-      </Button>
-    );
+    return <ProofFilePreview file={answer.file} />;
   }
   if (answer.fieldType === "confirmation") {
     return answer.value === true ? "Confirmed" : "Not confirmed";
@@ -88,12 +76,11 @@ export function SubmissionReviewPanel({
   }
 
   function approve(): void {
-    const confirmed = window.confirm(
-      `Approve this submission and pay ${formatMoney(submission.rewardCents)} from campaign escrow?`,
-    );
-    if (!confirmed) {
-      return;
-    }
+    setMode("approve");
+    setResult(null);
+  }
+
+  function confirmApproval(): void {
     decide({
       submissionId: submission.id,
       expectedVersion: submission.version,
@@ -190,7 +177,7 @@ export function SubmissionReviewPanel({
         </div>
 
         {submission.status === "pending" ? (
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 flex flex-col gap-3">
             <Button
               type="button"
               color="orange"
@@ -231,7 +218,36 @@ export function SubmissionReviewPanel({
               </Button>
             </div>
 
-            {mode ? (
+            {mode === "approve" ? (
+              <div className="mt-5 rounded-xl bg-[color-mix(in_srgb,var(--accent)_8%,transparent)] p-4 ring-1 ring-[color-mix(in_srgb,var(--accent)_24%,transparent)]">
+                <p className="font-medium">Confirm approval and payout</p>
+                <p className="mt-2 text-[12px] leading-[17px] text-current/60">
+                  {formatMoney(submission.rewardCents)} will move from campaign
+                  escrow to {submission.earnerName}. This cannot be undone.
+                </p>
+                <div className="mt-4 flex gap-2">
+                  <Button
+                    type="button"
+                    color="orange"
+                    variant="solid"
+                    disabled={isPending}
+                    loading={isPending}
+                    onClick={confirmApproval}
+                  >
+                    Confirm and pay
+                  </Button>
+                  <Button
+                    type="button"
+                    color="gray"
+                    variant="ghost"
+                    disabled={isPending}
+                    onClick={() => setMode(null)}
+                  >
+                    Cancel
+                  </Button>
+                </div>
+              </div>
+            ) : mode ? (
               <div className="mt-5 border-t border-black/10 pt-5 dark:border-white/12">
                 <label
                   htmlFor="review-feedback"

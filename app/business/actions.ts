@@ -1,5 +1,6 @@
 "use server";
 
+import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { z, ZodError } from "zod";
 import type {
@@ -19,6 +20,18 @@ import { reviewSubmission } from "@/lib/services/submissions";
 
 const campaignIdSchema = z.string().uuid();
 const creationIntentSchema = z.enum(["draft", "publish"]);
+
+function createCampaignSlug(title: string): string {
+  const base =
+    title
+      .toLocaleLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 64) || "task";
+
+  return `${base}-${randomUUID().slice(0, 7)}`;
+}
 
 export type ReviewActionInput =
   | {
@@ -52,7 +65,7 @@ function errorMessage(error: unknown): string {
     "code" in error &&
     error.code === "23505"
   ) {
-    return "That campaign URL is already in use. Choose another slug";
+    return "We could not create a unique task link. Try saving again";
   }
   if (error instanceof Error && error.name === "AuthenticationError") {
     return error.message;
@@ -80,6 +93,7 @@ export async function createCampaignAction(
     const intent = creationIntentSchema.parse(rawIntent);
     const campaign = await createCampaign(ownerId, {
       ...rawInput,
+      slug: createCampaignSlug(rawInput.title),
       deadline: new Date(rawInput.deadline),
     });
 

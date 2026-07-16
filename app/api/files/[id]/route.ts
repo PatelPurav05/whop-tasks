@@ -8,7 +8,7 @@ import { privateStorage } from "@/lib/storage/local-private-storage";
 const fileIdSchema = z.string().uuid();
 
 export async function GET(
-  _request: Request,
+  request: Request,
   context: { params: Promise<{ id: string }> },
 ): Promise<Response> {
   const session = await getCurrentSession();
@@ -50,11 +50,14 @@ export async function GET(
   const responseBody = new Uint8Array(body.byteLength);
   responseBody.set(body);
   const encodedName = encodeURIComponent(record.file.originalName);
+  const inline = new URL(request.url).searchParams.get("inline") === "1";
 
   return new Response(responseBody.buffer, {
     headers: {
       "Cache-Control": "private, no-store",
-      "Content-Disposition": `attachment; filename*=UTF-8''${encodedName}`,
+      "Content-Disposition": inline
+        ? `inline; filename*=UTF-8''${encodedName}`
+        : `attachment; filename*=UTF-8''${encodedName}`,
       "Content-Length": String(record.file.sizeBytes),
       "Content-Type": record.file.mimeType,
       "X-Content-Type-Options": "nosniff",

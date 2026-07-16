@@ -58,19 +58,18 @@ export function CampaignTable({
                   (campaign) => campaign.status === item.value,
                 ).length;
           return (
-            <button
+            <Button
               key={item.value}
               type="button"
               onClick={() => setFilter(item.value)}
-              className={`min-h-9 shrink-0 rounded-lg px-3 text-[12px] leading-[15px] font-medium transition-colors duration-200 ${
-                filter === item.value
-                  ? "bg-[var(--brand-vermilion)] text-white"
-                  : "bg-black/5 text-current/65 hover:bg-black/8 dark:bg-white/7 dark:hover:bg-white/10"
-              }`}
+              variant={filter === item.value ? "solid" : "soft"}
+              color={filter === item.value ? "orange" : "gray"}
+              size="1"
+              className="shrink-0"
               aria-pressed={filter === item.value}
             >
               {item.label} {count}
-            </button>
+            </Button>
           );
         })}
       </div>

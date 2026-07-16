@@ -1,12 +1,8 @@
 import {
   Bell20,
-  Clipboard20,
-  Home20,
-  MagnifyingGlass16,
   Wallet20,
 } from "@frosted-ui/icons";
-import { Button, TextField } from "@whop/react/components";
-import Image from "next/image";
+import { Button } from "@whop/react/components";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { getCurrentSession } from "@/lib/permissions";
@@ -14,6 +10,10 @@ import { getUserBalance } from "@/lib/services/ledger";
 import { listNotifications } from "@/lib/services/notifications";
 import { formatMoney } from "./format";
 import { AccountButton } from "./account-button";
+import { BrandLogo } from "./brand-logo";
+import { HeaderContext } from "./header-context";
+import { NavigationItems } from "./navigation-items";
+import { PageTransition } from "./page-transition";
 import { ThemeToggle } from "./theme-toggle";
 
 type ActiveArea =
@@ -24,50 +24,6 @@ type ActiveArea =
   | "earnings"
   | "marketplace"
   | "notifications";
-
-const earnNavigation = [
-  { href: "/", label: "Marketplace", area: "marketplace", icon: Home20 },
-  { href: "/earn", label: "My tasks", area: "earn", icon: Clipboard20 },
-  { href: "/earn/earnings", label: "Earnings", area: "earnings", icon: Wallet20 },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    area: "notifications",
-    icon: Bell20,
-  },
-] satisfies Array<{
-  href: string;
-  label: string;
-  area: ActiveArea;
-  icon: typeof Home20;
-}>;
-
-const businessNavigation = [
-  { href: "/business", label: "Campaigns", area: "business", icon: Home20 },
-  {
-    href: "/business/campaigns/new",
-    label: "Create",
-    area: "business-create",
-    icon: Clipboard20,
-  },
-  {
-    href: "/business/wallet",
-    label: "Wallet",
-    area: "business-wallet",
-    icon: Wallet20,
-  },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    area: "notifications",
-    icon: Bell20,
-  },
-] satisfies Array<{
-  href: string;
-  label: string;
-  area: ActiveArea;
-  icon: typeof Home20;
-}>;
 
 export async function ProductShell({
   active,
@@ -91,49 +47,13 @@ export async function ProductShell({
   const unreadCount =
     userData?.[1].filter((notification) => notification.readAt === null).length ??
     0;
-  const navigation =
-    workspace === "business" ? businessNavigation : earnNavigation;
   const contentClassName = "pb-20 lg:ml-60 lg:pb-0";
 
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[var(--border)] bg-[var(--surface)] px-4 sm:px-6 lg:pl-[264px] lg:pr-8">
-        <Link
-          href="/"
-          className="shrink-0 lg:hidden"
-          aria-label="Whop Tasks marketplace"
-        >
-          <Image
-            src="/brand/logos/whop_logo_lockup_duo_black.svg"
-            alt="Whop"
-            width={94}
-            height={21}
-            priority
-            className="dark:hidden"
-          />
-          <Image
-            src="/brand/logos/whop_logo_lockup_duo_white.svg"
-            alt="Whop"
-            width={94}
-            height={21}
-            priority
-            className="hidden dark:block"
-          />
-        </Link>
-
-        <form action="/" className="hidden min-w-0 max-w-lg flex-1 sm:block">
-          <TextField.Root size="2">
-            <TextField.Slot>
-              <MagnifyingGlass16 aria-hidden="true" />
-            </TextField.Slot>
-            <TextField.Input
-              type="search"
-              name="q"
-              aria-label="Search marketplace"
-              placeholder="Search tasks"
-            />
-          </TextField.Root>
-        </form>
+      <header className="sticky top-0 z-30 flex h-16 items-center gap-4 border-b border-[var(--border)] bg-[color-mix(in_srgb,var(--surface)_96%,transparent)] px-4 sm:px-6 lg:pl-[264px] lg:pr-8">
+        <BrandLogo className="lg:hidden" />
+        <HeaderContext workspace={workspace} active={active} />
 
         <div className="ml-auto flex items-center gap-1.5">
           {session ? (
@@ -175,24 +95,7 @@ export async function ProductShell({
       </header>
 
       <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-[var(--border)] bg-[var(--surface)] px-4 py-5 lg:flex">
-        <Link href="/" className="mb-8 px-2" aria-label="Whop Tasks marketplace">
-          <Image
-            src="/brand/logos/whop_logo_lockup_duo_black.svg"
-            alt="Whop"
-            width={112}
-            height={25}
-            priority
-            className="dark:hidden"
-          />
-          <Image
-            src="/brand/logos/whop_logo_lockup_duo_white.svg"
-            alt="Whop"
-            width={112}
-            height={25}
-            priority
-            className="hidden dark:block"
-          />
-        </Link>
+        <BrandLogo className="mb-8 ml-2" width={112} />
 
         <div className="mb-5 grid grid-cols-2 rounded-xl bg-[var(--surface-subtle)] p-1 text-sm font-medium">
           <Link
@@ -220,69 +123,38 @@ export async function ProductShell({
         </div>
 
         <nav aria-label="Primary" className="space-y-1">
-          {navigation.map((item) => {
-            const Icon = item.icon;
-            const selected = active === item.area;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                aria-current={selected ? "page" : undefined}
-                className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium ${
-                  selected
-                    ? "bg-[color-mix(in_srgb,var(--accent)_12%,transparent)] text-[var(--accent)]"
-                    : "text-[var(--muted)] hover:bg-[var(--surface-subtle)] hover:text-[var(--foreground)]"
-                }`}
-              >
-                <Icon aria-hidden="true" />
-                <span>{item.label}</span>
-                {item.area === "notifications" && unreadCount > 0 ? (
-                  <span className="ml-auto rounded-full bg-[var(--accent)] px-1.5 text-[11px] leading-5 text-white">
-                    {unreadCount}
-                  </span>
-                ) : null}
-              </Link>
-            );
-          })}
+          <NavigationItems
+            active={active}
+            workspace={workspace}
+            unreadCount={unreadCount}
+          />
         </nav>
 
         <div className="mt-auto rounded-xl bg-[var(--surface-subtle)] p-3 text-xs leading-4 text-[var(--muted)]">
-          Demo money only. Tasks and payouts stay local to this interview build.
+          Campaign budgets stay reserved until submitted work is approved.
         </div>
       </aside>
 
       {childHasMain ? (
-        <div className={contentClassName}>{children}</div>
+        <div className={contentClassName}>
+          <PageTransition>{children}</PageTransition>
+        </div>
       ) : (
-        <main className={contentClassName}>{children}</main>
+        <main className={contentClassName}>
+          <PageTransition>{children}</PageTransition>
+        </main>
       )}
 
       <nav
         aria-label="Mobile navigation"
         className="fixed inset-x-0 bottom-0 z-40 grid h-16 grid-cols-4 border-t border-[var(--border)] bg-[var(--surface)] pb-[env(safe-area-inset-bottom)] lg:hidden"
       >
-        {navigation.map((item) => {
-          const Icon = item.icon;
-          const selected = active === item.area;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              aria-current={selected ? "page" : undefined}
-              className={`relative flex min-h-14 flex-col items-center justify-center gap-1 text-[11px] ${
-                selected ? "text-[var(--accent)]" : "text-[var(--muted)]"
-              }`}
-            >
-              <Icon aria-hidden="true" />
-              <span>
-                {item.label === "Marketplace" ? "Browse" : item.label}
-              </span>
-              {item.area === "notifications" && unreadCount > 0 ? (
-                <span className="absolute right-[calc(50%-18px)] top-1.5 size-2 rounded-full bg-[var(--accent)]" />
-              ) : null}
-            </Link>
-          );
-        })}
+        <NavigationItems
+          active={active}
+          workspace={workspace}
+          unreadCount={unreadCount}
+          mobile
+        />
       </nav>
     </div>
   );

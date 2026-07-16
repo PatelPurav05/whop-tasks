@@ -46,7 +46,7 @@ async function ensureSystemAccount(
     )
     .limit(1);
 
-  assertDomain(account, "NOT_FOUND", "Demo clearing account is unavailable");
+  assertDomain(account, "NOT_FOUND", "Clearing account is unavailable");
   return account;
 }
 
@@ -227,7 +227,7 @@ export async function grantDemoCredits(
   assertDomain(
     Number.isSafeInteger(amountCents) && amountCents > 0,
     "VALIDATION",
-    "Demo credit amount must be positive integer cents",
+    "Credit amount must be positive integer cents",
   );
 
   return await db.transaction(async (tx) => {
@@ -263,7 +263,7 @@ export async function reserveCampaignFunds(
   assertDomain(
     walletBalance >= input.amountCents,
     "INSUFFICIENT_FUNDS",
-    "Add demo funds before publishing this campaign",
+    "Add funds before publishing this campaign",
     { availableCents: walletBalance, requiredCents: input.amountCents },
   );
 

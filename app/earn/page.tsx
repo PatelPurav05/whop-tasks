@@ -64,22 +64,22 @@ export default async function EarnPage() {
           </Button>
         </div>
 
-        <dl className="mt-8 grid overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] sm:grid-cols-3">
-          <div className="border-b border-[var(--border)] px-5 py-4 sm:border-r sm:border-b-0">
+        <dl className="mt-8 grid border-y border-[var(--border)] sm:grid-cols-3">
+          <div className="border-b border-[var(--border)] py-5 sm:border-r sm:border-b-0 sm:px-5 sm:first:pl-0">
             <dt className="text-sm text-[var(--muted)]">Needs action</dt>
-            <dd className="mt-1 text-[24px] leading-[27px] font-medium">
+            <dd className="mt-1 text-[20px] leading-[23px] font-medium tabular-nums">
               {needsAction.length}
             </dd>
           </div>
-          <div className="border-b border-[var(--border)] px-5 py-4 sm:border-r sm:border-b-0">
+          <div className="border-b border-[var(--border)] py-5 sm:border-r sm:border-b-0 sm:px-5">
             <dt className="text-sm text-[var(--muted)]">Under review</dt>
-            <dd className="mt-1 text-[24px] leading-[27px] font-medium">
+            <dd className="mt-1 text-[20px] leading-[23px] font-medium tabular-nums">
               {underReview.length}
             </dd>
           </div>
-          <div className="px-5 py-4">
+          <div className="py-5 sm:pl-5">
             <dt className="text-sm text-[var(--muted)]">Earned total</dt>
-            <dd className="mt-1 text-[24px] leading-[27px] font-medium">
+            <dd className="mt-1 text-[20px] leading-[23px] font-medium tabular-nums">
               {formatMoney(totalEarned)}
             </dd>
             <p className="mt-1 text-xs text-[var(--muted)]">

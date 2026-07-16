@@ -120,7 +120,7 @@ const campaignSeeds = [
       "Run a checkout quality pass on iPhone Safari and document any confusing, broken, or slow interaction.",
     category: "QA testing",
     instructions:
-      "Use Safari on an iPhone-sized viewport, attempt checkout with the demo card, and record reproducible observations.",
+      "Use Safari on an iPhone-sized viewport, attempt checkout with the test card, and record reproducible observations.",
     rewardCents: 2_500,
     slotCapacity: 2,
     claimWindowHours: 168,
@@ -608,13 +608,13 @@ function answerForRequirement(
       value = true;
       break;
     case "url":
-      value = `https://example.com/local-demo-proof/${campaign.slug}`;
+      value = `https://example.com/proof/${campaign.slug}`;
       break;
     case "short_text":
-      value = "Demo proof";
+      value = "Submission proof";
       break;
     case "long_text":
-      value = `Local demo proof for ${campaign.title}. The work follows the brief, documents the main findings, and includes clear next steps for review.`;
+      value = `Proof for ${campaign.title}. The work follows the brief, documents the main findings, and includes clear next steps for review.`;
       break;
     case "file":
     case "image":

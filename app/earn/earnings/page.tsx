@@ -38,7 +38,7 @@ export default async function EarningsPage() {
           Payout history
         </h1>
         <p className="mt-3 max-w-[68ch] text-[var(--muted)]">
-          Every approved task creates an immutable demo-ledger entry.
+          Track every wallet credit and approved payout in one place.
         </p>
 
         <dl className="mt-8 grid overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--surface)] sm:grid-cols-2">
@@ -51,7 +51,7 @@ export default async function EarningsPage() {
               {formatMoney(balance)}
             </dd>
             <p className="mt-2 text-xs text-[var(--muted)]">
-              Includes demo credits and approved earnings.
+              Includes wallet credits and approved earnings.
             </p>
           </div>
           <div className="p-5">

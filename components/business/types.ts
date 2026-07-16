@@ -19,7 +19,6 @@ export type ProofFieldType =
   | "confirmation";
 
 export type CampaignDraftInput = {
-  slug: string;
   title: string;
   description: string;
   category: string;

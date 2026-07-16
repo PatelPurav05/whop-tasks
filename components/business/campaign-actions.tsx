@@ -22,6 +22,7 @@ export function CampaignActions({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [result, setResult] = useState<ActionResult | null>(null);
+  const [isConfirmingArchive, setIsConfirmingArchive] = useState(false);
 
   function publish(): void {
     setResult(null);
@@ -35,20 +36,12 @@ export function CampaignActions({
   }
 
   function archive(): void {
-    const confirmed = window.confirm(
-      status === "active"
-        ? "Archive this campaign and refund all unused escrow? Active claims without submissions will be cancelled."
-        : "Archive this draft?",
-    );
-    if (!confirmed) {
-      return;
-    }
-
     setResult(null);
     startTransition(async () => {
       const nextResult = await archiveCampaignAction(campaignId);
       setResult(nextResult);
       if (nextResult.ok) {
+        setIsConfirmingArchive(false);
         router.refresh();
       }
     });
@@ -78,11 +71,47 @@ export function CampaignActions({
           color="danger"
           variant="soft"
           disabled={isPending}
-          onClick={archive}
+          onClick={() => {
+            setIsConfirmingArchive(true);
+            setResult(null);
+          }}
         >
           Archive campaign
         </Button>
       </div>
+      {isConfirmingArchive ? (
+        <div className="rounded-xl bg-[color-mix(in_srgb,var(--danger)_7%,transparent)] p-4 ring-1 ring-[color-mix(in_srgb,var(--danger)_22%,transparent)]">
+          <p className="font-medium">
+            {status === "active" ? "Archive this campaign?" : "Archive this draft?"}
+          </p>
+          <p className="mt-2 text-[12px] leading-[17px] text-current/60">
+            {status === "active"
+              ? "Unused escrow will be refunded. Active claims without submissions will be cancelled."
+              : "The draft will close without reserving any funds."}
+          </p>
+          <div className="mt-4 flex gap-2">
+            <Button
+              type="button"
+              color="danger"
+              variant="solid"
+              disabled={isPending}
+              loading={isPending}
+              onClick={archive}
+            >
+              Confirm archive
+            </Button>
+            <Button
+              type="button"
+              color="gray"
+              variant="ghost"
+              disabled={isPending}
+              onClick={() => setIsConfirmingArchive(false)}
+            >
+              Keep campaign
+            </Button>
+          </div>
+        </div>
+      ) : null}
       {result ? (
         <Callout.Root
           color={result.ok ? "success" : "danger"}

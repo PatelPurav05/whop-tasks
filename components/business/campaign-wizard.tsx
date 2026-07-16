@@ -14,6 +14,7 @@ import {
   TextField,
 } from "@whop/react/components";
 import { Plus16, XMark16 } from "@frosted-ui/icons";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createCampaignAction } from "@/app/business/actions";
 import { formatMoney } from "@/components/business/format";
 import type {
@@ -32,7 +33,6 @@ type RequirementDraft = {
 
 type WizardState = {
   title: string;
-  slug: string;
   description: string;
   category: string;
   instructions: string;
@@ -69,7 +69,6 @@ const categories = [
 
 const initialState: WizardState = {
   title: "",
-  slug: "",
   description: "",
   category: "",
   instructions: "",
@@ -129,9 +128,9 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [state, setState] = useState<WizardState>(initialState);
-  const [slugEdited, setSlugEdited] = useState(false);
   const [result, setResult] = useState<ActionResult | null>(null);
   const [isPending, startTransition] = useTransition();
+  const shouldReduceMotion = useReducedMotion();
 
   const rewardCents = Math.round(Number(state.rewardDollars || 0) * 100);
   const slotCapacity = Number(state.slotCapacity || 0);
@@ -157,7 +156,6 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
   function validateCurrentStep(): string | null {
     if (step === 0) {
       if (state.title.trim().length < 3) return "Add a campaign title";
-      if (state.slug.length < 3) return "Add a campaign URL";
       if (state.description.trim().length < 20)
         return "Describe the outcome in at least 20 characters";
       if (!state.category) return "Choose a category";
@@ -244,7 +242,6 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
     }
 
     const input: CampaignDraftInput = {
-      slug: state.slug,
       title: state.title,
       description: state.description,
       category: state.category,
@@ -284,22 +281,20 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
         <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-1">
           {steps.map((label, index) => (
             <li key={label}>
-              <button
+              <Button
                 type="button"
                 disabled={index > step}
                 onClick={() => setStep(index)}
-                className={`flex min-h-11 w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-[12px] leading-[15px] transition-colors duration-200 disabled:cursor-not-allowed ${
-                  index === step
-                    ? "bg-[var(--brand-vermilion)] text-white"
-                    : index < step
-                      ? "bg-black/6 text-current dark:bg-white/8"
-                      : "text-current/45"
-                }`}
+                variant={
+                  index === step ? "solid" : index < step ? "soft" : "ghost"
+                }
+                color={index === step ? "orange" : "gray"}
+                className="min-h-11 w-full justify-start"
                 aria-current={index === step ? "step" : undefined}
               >
                 <span className="font-medium">{index + 1}</span>
                 <span>{label}</span>
-              </button>
+              </Button>
             </li>
           ))}
         </ol>
@@ -315,51 +310,46 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
           </h2>
         </div>
 
-        {step === 0 ? (
-          <div className="space-y-6">
+        <AnimatePresence initial={false} mode="wait">
+          <motion.div
+            key={step}
+            initial={
+              shouldReduceMotion
+                ? { opacity: 1 }
+                : { opacity: 0, x: 8, filter: "blur(2px)" }
+            }
+            animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+            exit={
+              shouldReduceMotion
+                ? { opacity: 0 }
+                : { opacity: 0, x: -5, filter: "blur(2px)" }
+            }
+            transition={{
+              duration: shouldReduceMotion ? 0 : 0.18,
+              ease: [0.16, 1, 0.3, 1],
+            }}
+          >
+            {step === 0 ? (
+              <div className="space-y-6">
             <div>
               <FieldLabel htmlFor="campaign-title">Campaign title</FieldLabel>
               <TextField.Root size="3">
                 <TextField.Input
                   id="campaign-title"
                   value={state.title}
-                  onChange={(event) => {
-                    const title = event.target.value;
+                  onChange={(event) =>
                     setState((current) => ({
                       ...current,
-                      title,
-                      slug: slugEdited ? current.slug : slugify(title),
-                    }));
-                  }}
+                      title: event.target.value,
+                    }))
+                  }
                   placeholder="Review our mobile checkout"
                   maxLength={120}
                 />
               </TextField.Root>
-            </div>
-
-            <div>
-              <FieldLabel htmlFor="campaign-slug" hint="Public task URL">
-                Campaign URL
-              </FieldLabel>
-              <div className="flex items-center gap-2">
-                <span className="hidden text-[15px] leading-[18px] text-current/50 sm:inline">
-                  /tasks/
-                </span>
-                <TextField.Root size="3" className="flex-1">
-                  <TextField.Input
-                    id="campaign-slug"
-                    value={state.slug}
-                    onChange={(event) => {
-                      setSlugEdited(true);
-                      setState((current) => ({
-                        ...current,
-                        slug: slugify(event.target.value),
-                      }));
-                    }}
-                    maxLength={80}
-                  />
-                </TextField.Root>
-              </div>
+              <p className="mt-2 text-[12px] leading-[15px] text-current/50">
+                We generate the public task link automatically.
+              </p>
             </div>
 
             <div>
@@ -442,11 +432,11 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
                 placeholder="List the steps, constraints, and acceptance criteria."
               />
             </div>
-          </div>
-        ) : null}
+              </div>
+            ) : null}
 
-        {step === 1 ? (
-          <div className="space-y-5">
+            {step === 1 ? (
+              <div className="space-y-5">
             <p className="max-w-[68ch] text-[15px] leading-[20px] text-current/65">
               Ask only for evidence you will use during review. Earners see
               these fields in this order.
@@ -560,11 +550,11 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
               <Plus16 aria-hidden="true" />
               Add proof field
             </Button>
-          </div>
-        ) : null}
+              </div>
+            ) : null}
 
-        {step === 2 ? (
-          <div className="space-y-7">
+            {step === 2 ? (
+              <div className="space-y-7">
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <FieldLabel htmlFor="campaign-reward">
@@ -665,8 +655,8 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
               />
               {totalBudget > balanceCents ? (
                 <p className="mt-3 text-[12px] leading-[15px] text-red-700 dark:text-red-300">
-                  You need {formatMoney(totalBudget - balanceCents)} more in demo
-                  funds to publish. You can still save this campaign as a draft.
+                  You need {formatMoney(totalBudget - balanceCents)} more in your
+                  wallet to publish. You can still save this campaign as a draft.
                 </p>
               ) : (
                 <p className="mt-3 text-[12px] leading-[15px] text-current/55">
@@ -674,18 +664,18 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
                 </p>
               )}
             </div>
-          </div>
-        ) : null}
+              </div>
+            ) : null}
 
-        {step === 3 ? (
-          <div className="space-y-7">
+            {step === 3 ? (
+              <div className="space-y-7">
             <div>
               <div className="flex flex-wrap items-center gap-2">
                 <Badge color="orange" variant="soft">
                   {state.category}
                 </Badge>
                 <span className="text-[12px] leading-[15px] text-current/55">
-                  /tasks/{state.slug}
+                  Public link created automatically
                 </span>
               </div>
               <h3 className="mt-3 text-[24px] leading-[27px] font-medium">
@@ -743,11 +733,13 @@ export function CampaignWizard({ balanceCents }: { balanceCents: number }) {
               <Callout.Text>
                 {canAfford
                   ? `${formatMoney(totalBudget)} will move from your wallet into campaign escrow when you publish.`
-                  : "Your wallet cannot cover this campaign yet. Save it as a draft and publish after adding demo funds."}
+                  : "Your wallet cannot cover this campaign yet. Save it as a draft and publish after adding funds."}
               </Callout.Text>
             </Callout.Root>
-          </div>
-        ) : null}
+              </div>
+            ) : null}
+          </motion.div>
+        </AnimatePresence>
 
         {result ? (
           <div className="mt-6">
