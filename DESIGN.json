@@ -1,0 +1,171 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "name": "Whop Tasks",
+  "version": "1.0.0",
+  "register": "product",
+  "source": {
+    "brandKit": "/Users/puravpatel/Downloads/Whop_Brand_Kit_2026.zip",
+    "guidelines": "brand-source/06_Decks/Brand Guidelines /Whop - Brand Guidelines_v2.7.pdf",
+    "guidelinesVersion": "2.7",
+    "guidelinesDate": "May 2026",
+    "authorityRule": "The supplied PDF wins when the PDF and ASE palette differ.",
+    "knownDiscrepancy": {
+      "token": "offWhite",
+      "pdf": "#F3F3F3",
+      "ase": "#F1F1F1",
+      "selected": "#F3F3F3"
+    }
+  },
+  "theme": {
+    "default": "light",
+    "supportsDark": true,
+    "strategy": "restrained",
+    "scene": "An earner checks a claim deadline from a phone between commitments while a business reviewer compares structured proof on a laptop in normal daylight."
+  },
+  "colors": {
+    "brand": {
+      "vermilion": "#FA4616",
+      "offWhite": "#F3F3F3",
+      "charcoal": "#151515",
+      "indigo": "#354B98",
+      "cerulean": "#6196C1",
+      "chartreuse": "#C1FA81",
+      "mustard": "#FFD83B",
+      "dust": "#B6B5B0",
+      "bone": "#F1F1F1",
+      "white": "#FFFFFF",
+      "black": "#000000"
+    },
+    "roles": {
+      "lightCanvas": "{colors.brand.offWhite}",
+      "darkCanvas": "{colors.brand.charcoal}",
+      "primaryAction": "{colors.brand.vermilion}",
+      "activeSelection": "{colors.brand.vermilion}",
+      "muted": "{colors.brand.dust}",
+      "information": "{colors.brand.indigo}",
+      "informationSecondary": "{colors.brand.cerulean}",
+      "positiveHighlight": "{colors.brand.chartreuse}",
+      "warningHighlight": "{colors.brand.mustard}"
+    }
+  },
+  "typography": {
+    "liveTextFamily": "Acid Grotesk",
+    "fontFile": "public/brand/fonts/acid-grotesk-variable.ttf",
+    "dataVisualizationOnlyFamily": "Inter",
+    "mixFamiliesInLiveText": false,
+    "case": "sentence",
+    "roles": {
+      "pageTitle": {
+        "sizePx": 32,
+        "lineHeightPx": 35,
+        "weight": 500,
+        "letterSpacing": "0"
+      },
+      "sectionTitle": {
+        "sizePx": 24,
+        "lineHeightPx": 27,
+        "weight": 500,
+        "letterSpacing": "0"
+      },
+      "subsectionTitle": {
+        "sizePx": 20,
+        "lineHeightPx": 23,
+        "weight": 500,
+        "letterSpacing": "0"
+      },
+      "body": {
+        "sizePx": 15,
+        "lineHeightPx": 18,
+        "weight": 400,
+        "letterSpacing": "0"
+      },
+      "compactBody": {
+        "sizePx": 12,
+        "lineHeightPx": 15,
+        "weight": 400,
+        "letterSpacing": "0"
+      },
+      "control": {
+        "sizePx": 15,
+        "lineHeightPx": 18,
+        "weight": 500,
+        "letterSpacing": "0"
+      }
+    }
+  },
+  "spacing": {
+    "basePx": 4,
+    "scalePx": [4, 8, 12, 16, 20, 24, 32, 40, 48, 64],
+    "guttersPx": {
+      "mobile": 16,
+      "tablet": 24,
+      "desktop": 32
+    }
+  },
+  "breakpointsPx": {
+    "mobileMax": 639,
+    "tabletMin": 640,
+    "desktopMin": 1024,
+    "wideMin": 1440
+  },
+  "motion": {
+    "durationMs": {
+      "fast": 150,
+      "standard": 200,
+      "slow": 250
+    },
+    "easing": ["ease-out-quart", "ease-out-quint", "ease-out-expo"],
+    "reducedMotion": true,
+    "animateLayoutProperties": false
+  },
+  "assets": {
+    "publicRoot": "public/brand",
+    "logoRules": {
+      "useExactFiles": true,
+      "duotoneOnGrayscaleOnly": true,
+      "allowRecolor": false,
+      "allowDistortion": false,
+      "allowEffects": false,
+      "allowReordering": false
+    },
+    "pictogramUsage": [
+      "marketplace discovery",
+      "meaningful empty states",
+      "payout confirmation"
+    ],
+    "interfaceIconPackage": "@frosted-ui/icons"
+  },
+  "components": {
+    "system": "@whop/react Frosted UI",
+    "states": [
+      "default",
+      "hover",
+      "focus-visible",
+      "active",
+      "disabled",
+      "loading",
+      "error",
+      "success",
+      "empty"
+    ],
+    "avoidNestedCards": true,
+    "useSkeletonsForContentLoading": true
+  },
+  "accessibility": {
+    "target": "WCAG 2.2 AA",
+    "visibleFocus": true,
+    "keyboardOperable": true,
+    "statusNotColorOnly": true,
+    "mobileTouchTargets": true
+  },
+  "bans": [
+    "decorative gradients",
+    "glass effects",
+    "nested card grids",
+    "side-stripe accents",
+    "gradient text",
+    "gratuitous motion",
+    "all-caps live text",
+    "mixed Acid Grotesk and Inter live text"
+  ]
+}
